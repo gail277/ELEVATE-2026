@@ -7,14 +7,17 @@ typedef struct Node
     struct Node *next;  /*Stores the location of the integer*/
 } Node;
 
-/*Pointer to the address of the head*/
+/* Pointer to the address of the head of the linked list, 
+ * initialised to NULL as there is nothing in the list
+ */
 static Node *head = NULL;
 
 /**
  * Function that adds an integer value to the front of the list
  * @param value integer that is added to the front of the list
  */
-void intlist_add(int value)
+void 
+intlist_add(int value)
 {
     
     Node *new_node = (Node *)malloc(sizeof(Node));
@@ -27,9 +30,10 @@ void intlist_add(int value)
  * Function that the integer value at the front of the list
  * @returns value of the integer that has been removed from the front of the list
  */
-int intlist_remove(void)
+int 
+intlist_remove(void)
 {
-    /*If the list is empty, 0 is returned*/
+    /* If the list is empty, 0 is returned*/
     if (head == NULL)
     {
         return 0;
