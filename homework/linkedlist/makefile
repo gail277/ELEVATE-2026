@@ -16,3 +16,11 @@ $(TARGET): $(OBJS)
 
 clean:
 	rm -f $(OBJS) $(TARGET)
+
+.PHONY: lint docs
+
+lint:
+	splint $(SRCS)
+
+docs:
+	doxygen Doxyfile

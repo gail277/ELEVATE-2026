@@ -1,37 +1,66 @@
 #include <stdlib.h>
 #include "intlist.h"
 
-typedef struct Node
-{
-    int data;           /*Stores value of the integer*/
-    struct Node *next;  /*Stores the location of the integer*/
-} Node;
-
-/* Pointer to the address of the head of the linked list, 
- * initialised to NULL as there is nothing in the list
+/**
+ * A single node in the linked list.
+ * Each node holds one integer value and a pointer to the next
+ * node in the list (or NULL if it's the last node).
  */
-static Node *head = NULL;
+typedef struct Node_t
+{
+    int data;               /*Stores value of the integer*/
+    struct Node_t *next;    /*Stores the location of the integer*/
+} Node_t;
 
 /**
- * Function that adds an integer value to the front of the list
- * @param value integer that is added to the front of the list
+ * Pointer to the head (first node) of the linked list.
+ * Initialised to NULL since the list starts out empty.
+ * Declared static so it is private to this file.
+ * External code can only interact with the list through the functions below.
  */
-void 
+static Node_t *head = NULL;
+
+/**
+ * Allocates a new node, stores 'value' in it, and links it in
+ * front of the current head so it becomes the new first element.
+ *
+ * @param value integer to add to the head of the list
+ * @returns 1 if successful, 0 if memory allocation failed
+ */
+int 
 intlist_add(int value)
 {
-    
-    Node *new_node = (Node *)malloc(sizeof(Node));
+    /*Allocates enough space for a new node*/
+    Node_t *new_node = malloc(sizeof(Node_t));
+
+    /*If memory allocation failed (is null) then return 0*/
+    if (new_node == NULL)
+    {
+        return 0;
+    }
+
+    /*Set the new node's data to be the passed in value*/
     new_node->data = value;
+
+    /*Make the next node for new node the current head node*/
     new_node->next = head;
+
+    /*Set the head node to the new node*/
     head = new_node;
+
+    /*return 1 for successful node insertion*/
+    return 1;
 }
 
 /**
- * Function that the integer value at the front of the list
- * @returns value of the integer that has been removed from the front of the list
+ * Removes the head node and writes its value into 'out'
+ * @param out pointer to an int where the removed value will be stored. 
+ *            Only written to if the function returns 1; left untouched
+ *            if the list was empty.
+ * @returns 1 if successful, 0 if the list was already empty
  */
 int 
-intlist_remove(void)
+intlist_remove(int *out)
 {
     /* If the list is empty, 0 is returned*/
     if (head == NULL)
@@ -39,10 +68,11 @@ intlist_remove(void)
         return 0;
     }
 
-    Node *temp = head;
-    int value = temp->data;
-    head = temp->next;
-    free(temp);
-    return value;
+    Node_t *buffer = head;      /*Store head node in a buffer node*/  
+    int value = buffer->data;   /*Store integer value in buffer into 'value'*/
+    head = buffer->next;        /*Set head node to the next node in the linked list*/
+    free(buffer);               /*Release the memory of the removed node*/
+    *out = value;               /*Write the removed node back to the caller*/
 
+    return 1;   /*return 1 for successful node removal*/
 }

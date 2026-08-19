@@ -2,25 +2,52 @@
 #include <stdlib.h>
 #include "intlist.h"
 
-void main(void)
+int main(void)
 {
-    int i;      /*This is an integer variable to store the current loop number*/
-    int value;  /*This is an integer variable to store the value of the integer added to/removed from the linked list*/
+    /* Integer variable to store the current loop number */
+    int i;
 
-    /*For Loop which adds random numbers to the head of the linked list each iteration*/
+    /* Integer variable to store the value of the integer that
+     * is added to or removed from the linked list */
+    int value;
+
+    /* Constant int for the number of random int values added to the list*/
+    const int NUM_ADDED = 20;
+
+    /* Constant int for the number of random int values removed from the list*/
+    const int NUM_REMOVED = 20;
+
+
+
+    /*Loop which adds random numbers to the start of the linked list each iteration*/
     printf("ADDING NUMBERS TO THE LIST:\n");
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < NUM_ADDED; i++)
     {
         value = rand() % 100;
-        intlist_add(value);
-        printf("Added:%d\n", value);
+        if (intlist_add(value))
+        {
+            printf("Added:%d\n", value);
+        }
+        else
+        {
+            printf("ERROR: Failed to add number: %d\n", value);
+        }
     }
 
-    /*For Loop which removes the head of the linked list each iteration*/
+    /*Loop which removes the head of the linked list each iteration*/
     printf("\nREMOVING NUMBERS FROM THE LIST:\n");
-    for (i = 0; i < 20; i++)
+    for (i = 0; i < NUM_REMOVED; i++)
     {
-        value = intlist_remove();
-        printf("Removed: %d\n", value);
+        if (intlist_remove(&value))
+        {
+            printf("Removed: %d\n", value);
+        }
+        else
+        {
+            printf("ERROR: List is empty");
+        }
+        
     }
+
+    return 0;
 }
