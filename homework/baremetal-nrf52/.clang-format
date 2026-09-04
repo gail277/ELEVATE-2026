@@ -1,0 +1,37 @@
+BasedOnStyle: GNU
+IndentWidth: 4
+ColumnLimit: 80
+MaxEmptyLinesToKeep: 2
+SpaceBeforeParens: ControlStatements
+BinPackArguments: false
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterFunction: true
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossComments: true
+AlignConsecutiveMacros: AcrossEmptyLinesAndComments
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossComments: true
+AlignEscapedNewlines: Left
+AlignOperands: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBinaryOperators: None
+IncludeBlocks: Preserve
+PointerAlignment: Right
+BinPackParameters: true
+BreakAfterAttributes: Always
+AlwaysBreakAfterReturnType: All
+LineEnding: LF
+Macros:
+  - UB_PACKED_STRUCT=struct __attribute__((packed)) 
