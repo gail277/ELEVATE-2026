@@ -60,7 +60,7 @@ main(void)
 
         current_led = (current_led + 1) % leds_count;
 
-        uart_send_char('$');
+        uart_send_string("Hello");
         uart_send_char('\r');
         uart_send_char('\n');
         

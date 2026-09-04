@@ -22,3 +22,12 @@ void uart_init(void);
  * @param c Character to transmit.
  */
 void uart_send_char(char c);
+
+/**
+ * @brief Transmits a string using UART0.
+ *
+ * Sends each character in the string until the null terminator is reached.
+ *
+ * @param str String to transmit.
+ */
+void uart_send_string(char *str);

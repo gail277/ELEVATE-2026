@@ -40,7 +40,6 @@ static volatile uint32_t *UART0_CONFIG =
 static volatile uint32_t *UART0_TXD =
     (volatile uint32_t *)(UART0_BASE + 0x51C);
 
-
 void 
 uart_init(void)
 {
@@ -49,7 +48,6 @@ uart_init(void)
     *UART0_CONFIG = 0;              /* No parity (error checking), no flow control */
     *UART0_ENABLE = 4;              /* Enable UART */
     *UART0_TASKS_STARTTX = 1;       /* Start transmission of data in TXD register (pg 505)*/
-
 }
 
 void 
@@ -73,3 +71,13 @@ uart_send_char(char c)
     *UART0_EVENTS_TXDRDY = 0;
 }
 
+void 
+uart_send_string(char *str)
+{
+    /*send each character in the string until the null terminator is reached*/
+    while (*str != '\0')
+    {
+        uart_send_char(*str);
+        str++;
+    }
+}
