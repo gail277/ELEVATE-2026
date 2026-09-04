@@ -31,3 +31,19 @@ void uart_send_char(char c);
  * @param str String to transmit.
  */
 void uart_send_string(char *str);
+
+/**
+ * @brief Receives a single character using UART0.
+ *
+ * Waits until a character is received and returns it.
+ *
+ * @return Received character.
+ */
+char uart_receive_char(void);
+
+/**
+ * @brief Echoes received characters back to the sender.
+ *
+ * Continuously receives characters and transmits them back, with special handling for carriage return and new line.
+ */
+void uart_echo(void);

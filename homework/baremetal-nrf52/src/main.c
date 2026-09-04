@@ -48,23 +48,13 @@ main(void)
     /* Initialize UART*/
     uart_init();
 
-    for(;;){
+    uart_send_char('3');
+    uart_send_char('2');
+    uart_send_string("re");
 
-        /* Turn LED on */
-        *GPIO_OUTCLR = (1 << leds[current_led]);
-        delay(500000);
 
-        /* Turn LED off */
-        *GPIO_OUTSET = (1 << leds[current_led]);
-        delay(500000);
 
-        current_led = (current_led + 1) % leds_count;
-
-        uart_send_string("Hello");
-        uart_send_char('\r');
-        uart_send_char('\n');
-        
-    }
+    while(1){}
 
     return(0);
 }
