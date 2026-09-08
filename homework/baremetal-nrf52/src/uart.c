@@ -50,7 +50,7 @@ static volatile uint32_t *UART0_RXD =
 
 /* Pointer to register for pin select for RXD */
 static volatile uint32_t *UART0_PSEL_RXD =
-    (volatile uint32_t *)(UART0_BASE + 0x504);
+    (volatile uint32_t *)(UART0_BASE + 0x514);
 
 
 
@@ -65,13 +65,16 @@ uart_init(void)
 
     /* Clear events before starting */
     *UART0_EVENTS_TXDRDY = 0;
+    *UART0_EVENTS_RXDRDY = 0;
     *UART0_TASKS_STARTTX = 1;       /* Start transmission of data in TXD register (pg 505)*/
+    *UART0_TASKS_STARTRX = 1;       /* Start recieving data in RXD register (pg 506)*/
 }
 
 
 void 
 uart_send_char(char c)
 {
+    *UART0_EVENTS_TXDRDY = 0;
     
     /* Write character to TXD register */
     *UART0_TXD = c;
@@ -106,6 +109,7 @@ uart_send_string(char *str)
 char 
 uart_receive_char(void)
 {
+    *UART0_EVENTS_RXDRDY = 0;
     while (*UART0_EVENTS_RXDRDY == 0)
     {
         /* Wait for a character to be received */
@@ -118,30 +122,53 @@ uart_receive_char(void)
     return c;
 }
 
-void uart_echo(void)
-{
-    char c;
+void 
+uart_newline(void){
+    /*Not sure whether the terminal sends carriage return or newline, so both is sent */
     uart_send_char('\r');
     uart_send_char('\n');
+}
+
+void 
+uart_echo(void)
+{
+    char c;
+    char echo[500];
+    uint8_t echo_index = 0;
+    uart_newline();
     uart_send_string("$:");
 
     for (;;)
     {
         c = uart_receive_char();
-
+        
         /**
          * Echo the character back to the sender, with special handling 
-         * for carriage return and new line
+         * for carriage return and new line to echo the entire string,
+         * and when maximum character length is exceeeded.
          */
         if (c == '\r' || c == '\n')
         {
-            uart_send_char('\r');
-            uart_send_char('\n');
+            echo[echo_index] = '\0';
+            echo_index = 0;
+
+            uart_newline();
+            uart_send_string("Echo: ");
+            uart_send_string(echo);
+            uart_newline();
+            uart_newline();
             uart_send_string("$:");
         }
-        else
+        else if (echo_index < sizeof(echo) - 1)
         {
+            echo[echo_index] = c;
+            echo_index++;
+
             uart_send_char(c);
+        }
+        else{
+            uart_newline();
+            uart_send_string("Prompt has exceeeded max character length. Press Enter to echo and start a new prompt");
         }
     }
 }

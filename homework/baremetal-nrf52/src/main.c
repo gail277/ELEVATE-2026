@@ -44,17 +44,12 @@ main(void)
     *GPIO_DIR |= (1 << LED1_PIN);
     *GPIO_DIR |= (1 << LED2_PIN);
     *GPIO_DIR |= (1 << LED3_PIN);
-    //*GPIO_DIR |= (1 << LED4_PIN);
+    *GPIO_DIR |= (1 << LED4_PIN);
+
     /* Initialize UART*/
     uart_init();
+    uart_echo();
 
-    uart_send_char('3');
-    uart_send_char('2');
-    uart_send_string("re");
-
-
-
-    while(1){}
 
     return(0);
 }
