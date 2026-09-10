@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "uart.h"
+#include "myalloc.h"
 
 /** LED 1 Pin - P0.13 */
 #define LED1_PIN (13)
@@ -45,6 +46,9 @@ main(void)
     *GPIO_DIR |= (1 << LED2_PIN);
     *GPIO_DIR |= (1 << LED3_PIN);
     *GPIO_DIR |= (1 << LED4_PIN);
+
+    /*Initialise myalloc*/
+    myalloc_init();
 
     /* Initialize UART*/
     uart_init();

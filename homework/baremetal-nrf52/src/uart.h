@@ -1,7 +1,5 @@
 #pragma once
 
-#define UART_H
-
 /* UART functions */
 
 /**

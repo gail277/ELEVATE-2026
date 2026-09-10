@@ -1,5 +1,10 @@
 #include <stdint.h>
+#include <string.h> 
+#include <stdlib.h>
 #include "uart.h"
+#include "myalloc.h"
+
+
 /* set base adddress for UART0, instance of the UART peripheral */
 #define UART0_BASE 0x40002000
 
@@ -109,7 +114,6 @@ uart_send_string(char *str)
 char 
 uart_receive_char(void)
 {
-    *UART0_EVENTS_RXDRDY = 0;
     while (*UART0_EVENTS_RXDRDY == 0)
     {
         /* Wait for a character to be received */
@@ -153,11 +157,14 @@ uart_echo(void)
             echo_index = 0;
 
             uart_newline();
-            uart_send_string("Echo: ");
-            uart_send_string(echo);
+            uart_process_command(echo);
             uart_newline();
             uart_newline();
             uart_send_string("$:");
+        }
+        //backspace is pressed
+        else if (c == '\b'){
+            echo_index--;
         }
         else if (echo_index < sizeof(echo) - 1)
         {
@@ -171,4 +178,73 @@ uart_echo(void)
             uart_send_string("Prompt has exceeeded max character length. Press Enter to echo and start a new prompt");
         }
     }
+}
+
+
+static void uart_send_hex(uintptr_t value)
+{
+    char hex[] = "0123456789ABCDEF";
+    int i;
+
+    uart_send_string("0x");
+
+    for (i = (sizeof(uintptr_t) * 2) - 1; i >= 0; i--)
+    {
+        uart_send_char(hex[(value >> (i * 4)) & 0xF]);
+    }
+}
+
+
+void 
+uart_process_command(char *command)
+{
+   
+    /* alloc <size> */
+    if (strncmp(command, "alloc ", 6) == 0)
+    {
+        uint32_t size;
+        void *ptr;
+
+        size = (uint32_t)atoi(command + 6);
+        ptr = myalloc(size);
+
+        if (ptr == NULL)
+        {
+            uart_send_string("Allocation failed");
+        }
+        else
+        {
+            uart_send_string("Allocated at: ");
+            uart_send_hex((uintptr_t)ptr);
+        }
+
+        uart_newline();
+    }
+
+    /* free <address> */
+    else if (strncmp(command, "free ", 5) == 0)
+    {
+        uintptr_t address;
+
+        address = (uintptr_t)strtoul(command + 5, NULL, 0);
+        myfree((void *)address);
+
+        uart_send_string("Block freed");
+        uart_newline();
+    }
+
+    /* status */
+    else if (strcmp(command, "status") == 0)
+    {
+        uart_send_string("Status command");
+        uart_newline();
+    }
+
+    /* Unknown command */
+    else
+    {
+        uart_send_string("Unknown command");
+        uart_newline();
+    }
+
 }
