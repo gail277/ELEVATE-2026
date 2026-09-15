@@ -1,3 +1,18 @@
+
+/**
+ * Possible ways to  detect memory leaks:
+ * 
+ * Have a list that tracks allocated blocks of memory
+ *  however this would require memory and the fixed size of the list 
+ * varies so this is not optimal
+ *  
+ * Each block header contains a flag which determines if a block is free or used
+ * At program termination any block still marked as allocated would 
+ * indicate a possible leak.
+ * 
+ * */
+
+
 #include <stdint.h>
 #include <stddef.h>
 #include "myalloc.h"
@@ -29,6 +44,8 @@ void *myalloc(uint32_t size)
 {
     block_t *current = free_list;
     block_t *previous = NULL;
+    block_t *prev_of_best = NULL;
+    block_t *best = NULL;
     
     /* Round requested size up to a multiple of 4 */
     size = (size + 3) & ~3U;
@@ -38,57 +55,68 @@ void *myalloc(uint32_t size)
         /*If free block is large enough */
         if (current->length >= size)
         {
-            /*
-             * Check whether the block is large enough
-             * to split into an allocated block and a new
-             * free block with usable space.
-             */
-            if (current->length >= size + sizeof(block_t) + sizeof(uint32_t))
+            /*If the free block is a tighter fit than the best block*/
+            if (best == NULL || current->length < best->length)
             {
-                block_t *new_block;
-
-                new_block = (block_t *)((uint8_t *)(current + 1) + size);
-
-                new_block->length =
-                    current->length - size - sizeof(block_t);
-
-                new_block->next = current->next;
-
-                if (previous == NULL)
-                {
-                    free_list = new_block;
-                }
-                else
-                {
-                    previous->next = new_block;
-                }
-
-                current->length = size;
-
-                return (void *)(current + 1);
+                prev_of_best = previous;
+                best = current;
             }
-
-            /*
-             * Block is suitable but too small to split,
-             * so use the entire block.
-             */
-            if (previous == NULL)
-            {
-                free_list = current->next;
-            }
-            else
-            {
-                previous->next = current->next;
-            }
-
-            return (void *)(current + 1);
         }
 
         previous = current;
         current = current->next;
     }
 
-    return NULL;
+    if (best == NULL)
+    {
+        return NULL;
+    }
+    
+    /*
+        * Check whether the block is large enough
+        * to split into an allocated block and a new
+        * free block with usable space.
+        */
+    if (best->length >= size + sizeof(block_t) + sizeof(uint32_t))
+    {
+        block_t *new_block;
+
+        new_block = (block_t *)((uint8_t *)(best + 1) + size);
+
+        new_block->length =
+            best->length - size - sizeof(block_t);
+
+        new_block->next = best->next;
+
+        if (prev_of_best == NULL)
+        {
+            free_list = new_block;
+        }
+        else
+        {
+            prev_of_best->next = new_block;
+        }
+
+        best->length = size;
+
+        return (void *)(best + 1);
+    }
+
+    /*
+        * Block is suitable but too small to split,
+        * so use the entire block.
+        */
+    if (prev_of_best == NULL)
+    {
+        free_list = best->next;
+    }
+    else
+    {
+        prev_of_best->next = best->next;
+    }
+
+    return (void *)(best + 1);
+
 }
 
 

@@ -164,7 +164,10 @@ uart_echo(void)
         }
         //backspace is pressed
         else if (c == '\b'){
-            echo_index--;
+            if(echo_index > 0)
+            {
+                echo_index--;
+            }
         }
         else if (echo_index < sizeof(echo) - 1)
         {
