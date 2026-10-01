@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include "uart.h"
 #include "myalloc.h"
+#include "radio.h"
+#include "chat.h"
 
 /** LED 1 Pin - P0.13 */
 #define LED1_PIN (13)
@@ -52,7 +54,12 @@ main(void)
 
     /* Initialize UART*/
     uart_init();
-    uart_echo();
+    
+    
+    radio_init();
+
+    radio_RX_ramp_up();
+    chat();
 
 
     return(0);

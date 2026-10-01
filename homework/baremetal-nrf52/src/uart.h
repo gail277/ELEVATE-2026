@@ -45,3 +45,13 @@ char uart_receive_char(void);
  * Continuously receives characters and transmits them back, with special handling for carriage return and new line.
  */
 void uart_echo(void);
+
+/**
+ * @brief Checks whether UART data is available to be received.
+ *
+ * Checks the UART receive event register to determine whether
+ * a character has been received.
+ *
+ * @return Non-zero if a character is available, otherwise 0.
+ */
+uint8_t uart_data_available(void);

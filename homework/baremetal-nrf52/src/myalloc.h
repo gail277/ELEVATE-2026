@@ -2,11 +2,11 @@
 
 #include <stdint.h>
 
-/* Initialise the memory pool and free list */
+/** @brief Initialise the memory pool and free list */
 void myalloc_init(void);
 
-/* Allocate a block of memory */
+/** @brief Allocate a block of memory */
 void *myalloc(uint32_t size);
 
-/* Free a previously allocated block */
+/** @brief Free a previously allocated block */
 void myfree(void *ptr);
